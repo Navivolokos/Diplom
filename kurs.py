@@ -1,24 +1,47 @@
+from time import localtime, strftime, sleep
 import requests
 from bs4 import BeautifulSoup
-
-def save_webpage(url, filename):
-   
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.write(soup.prettify())
-
-        print(f"Страница успешно сохранена в {filename}")
-
-    except requests.exceptions.RequestException as e:
-        print(f"Ошибка при загрузке страницы: {e}")
-    except Exception as e:
-        print(f"Ошибка при сохранении страницы: {e}")
-
-url = "http://obuchenie.forabank.ru/index.cgi?mid=4&ajob=json3002&id=788"
+import os
+		
 filename = "downloaded_kurs.html"
-save_webpage(url, filename)
+
+def kurs_open():
+	try:
+		with open(filename, "r") as curs_file:
+			curs_read=curs_file.read()
+			data = eval(curs_read)	
+			bezroot=data["root"]
+			b=bezroot["item"]
+	
+			for i in b:
+				spisok = i['data']
+		
+		new_spisok = spisok['currency']
+		for dics in new_spisok:
+			if dics['code'] == "USD":
+				kurs_USD =(dics['buy'],dics["sell"])		
+			if dics['code'] == "EUR":
+				kurs_EUR =(dics['buy'],dics["sell"])
+			if dics['code'] == "CNY":
+				kurs_CNY =(dics['buy'],dics["sell"])
+			
+		kurs_USD= '&emsp;'.join(map(str, kurs_USD))
+		kurs_EUR= '&emsp;'.join(map(str, kurs_EUR))
+		kurs_CNY= '&emsp;'.join(map(str, kurs_CNY))
+		return kurs_USD, kurs_EUR, kurs_CNY
+		
+	except:		
+		kurs_USD="00.00&emsp;00.00"
+		kurs_EUR="00.00&emsp;00.00"
+		kurs_CNY="00.00&emsp;00.00"
+		return kurs_USD, kurs_EUR, kurs_CNY
+
+def main():	
+	if __name__ == "__main__":
+		main()
+		
+	
+	
+		
+	
+	
